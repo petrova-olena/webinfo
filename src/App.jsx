@@ -1,125 +1,178 @@
-import { useState } from 'react'
 import './App.css'
 
+const htmlCategories = [
+  {
+    category: 'Main (root)',
+    elements: [
+      { tag: 'html', description: 'Root element of an HTML document.' },
+      { tag: 'head', description: 'Contains meta-information about the document.' },
+      { tag: 'body', description: 'Contains visible page content.' },
+    ],
+  },
+  {
+    category: 'Metadata and management',
+    elements: [
+      { tag: 'base', description: 'Specifies the base URL for relative URLs.' },
+      { tag: 'link', description: 'Defines a relationship to an external resource.' },
+      { tag: 'meta', description: 'Provides metadata like charset, author.' },
+      { tag: 'style', description: 'Contains internal CSS.' },
+      { tag: 'title', description: 'Sets the document title in the browser tab.' },
+    ],
+  },
+  {
+    category: 'Document section',
+    elements: [
+      { tag: 'header', description: 'Document or section header.' },
+      { tag: 'nav', description: 'Navigation links.' },
+      { tag: 'main', description: 'Main content of the page.' },
+      { tag: 'section', description: 'Generic section of a document.' },
+      { tag: 'article', description: 'Self-contained content (e.g., blog post).' },
+      { tag: 'aside', description: 'Sidebar or tangential content.' },
+      { tag: 'footer', description: 'Footer for a section/document.' },
+      { tag: 'address', description: 'Contact info for the document or author.' },
+    ],
+  },
+  {
+    category: 'Textual and semantic',
+    elements: [
+      { tag: 'h1 - h6', description: 'Headings, from most to least important.' },
+      { tag: 'p', description: 'Paragraph.' },
+      { tag: 'hr', description: 'Horizontal rule (line).' },
+      { tag: 'pre', description: 'Preformatted text.' },
+      { tag: 'blockquote', description: 'Quoted section.' },
+      { tag: 'ol', description: 'Ordered list.' },
+      { tag: 'ul', description: 'Unordered list.' },
+      { tag: 'li', description: 'List item.' },
+      { tag: 'dl', description: 'Description list.' },
+      { tag: 'dt', description: 'Term in a description list.' },
+      { tag: 'dd', description: 'Description for the term.' },
+      { tag: 'figure', description: 'Self-contained content like images.' },
+      { tag: 'figcaption', description: 'Caption for a figure.' },
+      { tag: 'div', description: 'Generic block container.' },
+    ],
+  },
+  {
+    category: 'Inline text',
+    elements: [
+      { tag: 'a', description: 'Hyperlink.' },
+      { tag: 'abbr', description: 'Abbreviation.' },
+      { tag: 'b', description: 'Bold text.' },
+      { tag: 'bdi', description: 'Bi-directional isolation.' },
+      { tag: 'br', description: 'Line break.' },
+      { tag: 'cite', description: 'Citation of a source.' },
+      { tag: 'code', description: 'Code snippet.' },
+      { tag: 'data', description: 'Machine-readable value.' },
+      { tag: 'dfn', description: 'Term being defined.' },
+      { tag: 'em', description: 'Emphasized text.' },
+      { tag: 'i', description: 'Italic text.' },
+      { tag: 'kbd', description: 'Keyboard input.' },
+      { tag: 'mark', description: 'Highlighted text.' },
+      { tag: 'q', description: 'Inline quotation.' },
+      { tag: 'rp', description: 'Fallback for ruby.' },
+      { tag: 'rt', description: 'Ruby pronunciation.' },
+      { tag: 'ruby', description: 'Ruby annotation.' },
+      { tag: 's', description: ' Strikethrough (no longer valid).' },
+      { tag: 'samp', description: 'Sample output.' },
+      { tag: 'small', description: 'Smaller text.' },
+      { tag: 'span', description: 'Generic inline container.' },
+      { tag: 'strong', description: 'Important text.' },
+      { tag: 'sub', description: 'Subscript text.' },
+      { tag: 'sup', description: 'Superscript text.' },
+      { tag: 'time', description: 'Machine-readable time/date.' },
+      { tag: 'u', description: 'Underlined text.' },
+      { tag: 'var', description: 'Variable in code.' },
+      { tag: 'wbr', description: 'Word break opportunity.' },
+    ],
+  },
+  {
+    category: 'Media',
+    elements: [
+      { tag: 'img', description: 'Image.' },
+      { tag: 'audio', description: 'Audio content.' },
+      { tag: 'video', description: 'Video content.' },
+      { tag: 'source', description: 'Source for media.' },
+      { tag: 'track', description: 'Text tracks (subtitles).' },
+      { tag: 'map', description: 'Image map container.' },
+      { tag: 'area', description: 'Clickable area inside an image map.' },
+      { tag: 'picture', description: 'Responsive image container.' },
+      { tag: 'canvas', description: 'Scriptable graphics area.' },
+      { tag: 'svg', description: 'Embedded vector graphics.' },
+    ],
+  },
+  {
+    category: 'Forms',
+    elements: [
+      { tag: 'form', description: 'Form container.' },
+      { tag: 'input', description: 'Input field.' },
+      { tag: 'textarea', description: 'Multiline text input.' },
+      { tag: 'button', description: 'Clickable button.' },
+      { tag: 'select', description: 'Dropdown menu.' },
+      { tag: 'option', description: 'Option in dropdown.' },
+      { tag: 'optgroup', description: 'Group of options.' },
+      { tag: 'label', description: 'Label for form element.' },
+      { tag: 'fieldset', description: 'Group related fields.' },
+      { tag: 'legend', description: 'Caption for a fieldset.' },
+      { tag: 'datalist', description: 'Autocomplete options.' },
+      { tag: 'output', description: 'Calculation result.' },
+      { tag: 'meter', description: 'Scalar measurement.' },
+      { tag: 'progress', description: 'Task progress indicator.' },
+    ],
+  },
+  {
+    category: 'Tables',
+    elements: [
+      { tag: 'table', description: 'Table container.' },
+      { tag: 'caption', description: 'Table caption.' },
+      { tag: 'thead', description: 'Header row group.' },
+      { tag: 'tbody', description: 'Body row group.' },
+      { tag: 'tfoot', description: 'Footer row group.' },
+      { tag: 'tr', description: 'Table row.' },
+      { tag: 'th', description: 'Header cell.' },
+      { tag: 'td', description: 'Table data cell.' },
+    ],
+  },
+  {
+    category: 'Scenarios and interaction',
+    elements: [
+      { tag: 'script', description: 'Client-side script (JS).' },
+      { tag: 'noscript', description: 'Fallback for disabled scripts.' },
+      { tag: 'template', description: 'HTML template (not rendered).' },
+      { tag: 'slot', description: 'Web component placeholder.' },
+      { tag: 'canvas', description: 'Drawable region (for JS graphics).' },
+      { tag: 'dialog', description: 'Dialog box.' },
+      { tag: 'details', description: 'Expandable content.' },
+      { tag: 'summary', description: 'Summary for <details>.' },
+    ],
+  },
+  {
+    category: 'Framing and enbedding',
+    elements: [
+      { tag: 'iframe', description: 'Embedded HTML page.' },
+      { tag: 'embed', description: 'External resource.' },
+      { tag: 'object', description: 'Embedded object (e.g., plugin).' },
+      { tag: 'param', description: 'Parameter for <object>.' },
+    ],
+  },
+]
+
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
-    <>
-      <h1>HTML documentation</h1>
-      <h3>1. Main (root)</h3>
-      <p>html</p>
-      <p>head</p>
-      <p>body</p>
-      <h3>2. Metadata and management</h3>
-      <p>base</p>
-      <p>link</p>
-      <p>meta</p>
-      <p>style</p>
-      <p>title</p>
-      <h3>3. Document section</h3>
-      <p>header</p>
-      <p>nav</p>
-      <p>main</p>
-      <p>section</p>
-      <p>article</p>
-      <p>aside</p>
-      <p>footer</p>
-      <p>address</p>
-      <h3>4. Textual and semantic</h3>
-      <p>h1 - h6</p>
-      <p>p</p>
-      <p>hr</p>
-      <p>pre</p>
-      <p>blockquote</p>
-      <p>ol</p>
-      <p>ul</p>
-      <p>li</p>
-      <p>dl</p>
-      <p>dt</p>
-      <p>dd</p>
-      <p>figure</p>
-      <p>figcaption</p>
-      <p>div</p>
-      <h3>5. Inline text</h3>
-      <p>a</p>
-      <p>abbr</p>
-      <p>b</p>
-      <p>bdi</p>
-      <p>br</p>
-      <p>cite</p>
-      <p>code</p>
-      <p>data</p>
-      <p>dfn</p>
-      <p>em</p>
-      <p>i</p>
-      <p>kbd</p>
-      <p>mark</p>
-      <p>q</p>
-      <p>rp</p>
-      <p>rt</p>
-      <p>ruby</p>
-      <p>s</p>
-      <p>samp</p>
-      <p>small</p>
-      <p>span</p>
-      <p>strong</p>
-      <p>sub</p>
-      <p>sup</p>
-      <p>time</p>
-      <p>u</p>
-      <p>var</p>
-      <p>wbr</p>
-      <h3>6. Media</h3>
-      <p>img</p>
-      <p>audio</p>
-      <p>video</p>
-      <p>source</p>
-      <p>track</p>
-      <p>map</p>
-      <p>area</p>
-      <p>picture</p>
-      <p>canvas</p>
-      <p>svg (SVG graphics are embedded)</p>
-      <h3>7. Forms</h3>
-      <p>form</p>
-      <p>input</p>
-      <p>textarea</p>
-      <p>button</p>
-      <p>select</p>
-      <p>option</p>
-      <p>optgroup</p>
-      <p>label</p>
-      <p>fieldset</p>
-      <p>legend</p>
-      <p>datalist</p>
-      <p>output</p>
-      <p>meter</p>
-      <p>progress</p>
-      <h3>8. Tables</h3>
-      <p>table</p>
-      <p>caption</p>
-      <p>thead</p>
-      <p>tbody</p>
-      <p>tfoot</p>
-      <p>tr</p>
-      <p>th</p>
-      <p>td</p>
-      <h3>9. Scenarios and interaction</h3>
-      <p>script</p>
-      <p>noscript</p>
-      <p>template</p>
-      <p>slot (in Web Components)</p>
-      <p>canvas</p>
-      <p>dialog</p>
-      <p>details</p>
-      <p>summary</p>
-      <h3>10. Framing and embedding</h3>
-      <p>iframe</p>
-      <p>embed</p>
-      <p>object</p>
-      <p>param</p>
-    </>
+    <div className="App">
+      <h1>HTML Documentation</h1>
+      {htmlCategories.map((category) => (
+        <div key={category.category}>
+          <h3>{category.category}</h3>
+          <ul>
+            {category.elements.map((el) => (
+              <li key={el.tag}>
+                <strong>{el.tag}</strong>: {el.description}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
   )
 }
 
