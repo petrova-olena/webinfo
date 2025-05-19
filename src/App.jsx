@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
 import 'ag-grid-community/styles/ag-theme-material.css';
+import 'ag-grid-community/styles/ag-theme-alpine.css';
 import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
 
 ModuleRegistry.registerModules([ AllCommunityModule ]);
@@ -169,7 +170,8 @@ function App() {
         cat.elements.map(el => ({
           tag: el.tag,
           description: el.description,
-          category: cat.category
+          category: cat.category,
+          fullDescription: el.fullDescription || el.description
         }))
       ),
     []
@@ -184,7 +186,7 @@ function App() {
   return (
     <div style={{ width: '120%', height: '100vh', padding: '1rem' }}>
       <h1>HTML Documentation</h1>
-      <div className="ag-theme-material" style={{ height: '500px', width: '100%' }}>
+      <div className="ag-theme-material" style={{ height: '600px', width: '100%' }}>
         <AgGridReact
           rowData={rowData}
           columnDefs={columnDefs}
@@ -195,6 +197,36 @@ function App() {
             wrapText: true,
             autoHeight: true
           }}
+          masterDetail={true}
+          detailCellRendererParams={{
+            detailGridOptions: {
+              domLayout: 'autoHeight',
+              columnDefs: [
+                {
+                  field: 'details',
+                  headerName: 'Details',
+                  flex: 1,
+                  cellRenderer: (params) => (
+                    <div style={{ whiteSpace: 'normal', padding: '10px' }}>
+                      {params.value}
+                    </div>
+                  ),
+                },
+              ],
+              defaultColDef: {
+              flex: 1,
+              autoHeight: true,
+              wrapText: true,
+            },
+          },
+          getDetailRowData: (params) => {
+            params.successCallback([
+              {
+                details: params.data.fullDescription,
+              },
+            ])
+          },
+        }}
         />
       </div>
     </div>
