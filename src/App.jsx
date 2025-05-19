@@ -1,4 +1,11 @@
-import './App.css'
+import './App.css';
+import { useMemo } from 'react';
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/styles/ag-grid.css';
+import 'ag-grid-community/styles/ag-theme-material.css';
+import { ModuleRegistry, AllCommunityModule } from 'ag-grid-community';
+
+ModuleRegistry.registerModules([ AllCommunityModule ]);
 
 const htmlCategories = [
   {
@@ -156,22 +163,40 @@ const htmlCategories = [
 ]
 
 function App() {
+  const rowData = useMemo(
+    () =>
+      htmlCategories.flatMap(cat =>
+        cat.elements.map(el => ({
+          tag: el.tag,
+          description: el.description,
+          category: cat.category
+        }))
+      ),
+    []
+  )
+
+  const columnDefs = useMemo(() => [
+    { headerName: 'Tag', field: 'tag', filter: true, sortable: true, maxWidth: 100 },
+    { headerName: 'Category', field: 'category', filter: true, sortable: true },
+    { headerName: 'Description', field: 'description', flex: 1, filter: true }
+  ], [])
 
   return (
-    <div className="App">
+    <div style={{ width: '120%', height: '100vh', padding: '1rem' }}>
       <h1>HTML Documentation</h1>
-      {htmlCategories.map((category) => (
-        <div key={category.category}>
-          <h3>{category.category}</h3>
-          <ul>
-            {category.elements.map((el) => (
-              <li key={el.tag}>
-                <strong>{el.tag}</strong>: {el.description}
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      <div className="ag-theme-material" style={{ height: '500px', width: '100%' }}>
+        <AgGridReact
+          rowData={rowData}
+          columnDefs={columnDefs}
+          defaultColDef={{
+            resizable: true,
+            sortable: true,
+            filter: true,
+            wrapText: true,
+            autoHeight: true
+          }}
+        />
+      </div>
     </div>
   )
 }
